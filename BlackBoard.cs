@@ -75,6 +75,7 @@ public class Blackboard : Dictionary<string, object>, ISerializationCallbackRece
 
             switch (value)
             {
+                case null: encode = "(null)"; break;
                 case int: encode = "(int)" + ((int)value).ToString("F9"); break;
                 case float: encode = "(float)" + ((float)value).ToString("F9"); break;
                 case double: encode = "(double)" + ((double)value).ToString("F9"); break;
@@ -168,6 +169,7 @@ public class Blackboard : Dictionary<string, object>, ISerializationCallbackRece
     {
         switch (contentType)
         {
+            case "null": Add(key, null); return;
             case "int": Add(key, (int)int.Parse(encodedValue)); return;
             case "float": Add(key, (float)float.Parse(encodedValue)); return;
             case "double": Add(key, (double)double.Parse(encodedValue)); return;
@@ -210,6 +212,17 @@ public class Blackboard : Dictionary<string, object>, ISerializationCallbackRece
         }
     }
 
+    public void SetOrAdd(string key, object ob)
+    {
+        if (this.ContainsKey(key))
+        {
+            this[key] = ob;
+        }
+        else
+        {
+            this.Add(key, ob);
+        }
+    }
 
     [System.Serializable]
     private static class Serializer

@@ -234,6 +234,7 @@ public abstract class DictionaryDrawer<TK, TV> : PropertyDrawer
             return (T)(object)EditorGUI.ObjectField(rect, (UnityObject)(object)value, type, true);
         switch (value)
         {
+            case null: EditorGUI.LabelField(rect, "null"); return value;
             case long: return (T)(object)EditorGUI.LongField(rect, (long)(object)value);
             case int: return (T)(object)EditorGUI.IntField(rect, (int)(object)value);
             case float: return (T)(object)EditorGUI.FloatField(rect, (float)(object)value);
@@ -274,7 +275,6 @@ public abstract class DictionaryDrawer<TK, TV> : PropertyDrawer
         EditorGUI.LabelField(rect, $"{fieldType.ToString().Replace("+", ".")} {(isStruct ? "struct" : "class")} instance");
         if( GUI.Button(new Rect(rect.xMax - kButtonWidth, rect.y, kButtonWidth, kButtonWidth), content, style))
         {
-
             Debug.Log(JsonUtility.ToJson(value));
         }
 
