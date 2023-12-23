@@ -15,3 +15,8 @@ It allows for dynamically changing dictionary value types at runtime, and it sup
   - [Bounds](https://docs.unity3d.com/ScriptReference/Bounds.html) / [BoundsInt](https://docs.unity3d.com/ScriptReference/BoundsInt.html) and [Rect](https://docs.unity3d.com/ScriptReference/Rect.html) / [RectInt](https://docs.unity3d.com/ScriptReference/RectInt.html)
   - [Gradients](https://docs.unity3d.com/ScriptReference/Gradient.html), [Animation Curves](https://docs.unity3d.com/ScriptReference/AnimationCurve.html), and [Color](https://docs.unity3d.com/ScriptReference/Color.html)
   - Any struct or class that is serializable using [JsonUtility](https://docs.unity3d.com/ScriptReference/JsonUtility.html) (Although there is no general drawer for it yet)
+
+## How To Use
+
+For those not familiar with Editor scripting, it is important to note that the DictionaryDrawer file must be located under a folder named "Editor" in the assets folder.
+This file can be placed at "Assets/Editor", or "Assets/[...some path]/Editor"
