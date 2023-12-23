@@ -92,7 +92,7 @@ public class Blackboard : Dictionary<string, object>, ISerializationCallbackRece
                 case AnimationCurve: encode = "(AnimationCurve)" + Serializer.SerializeAnimationCurve((AnimationCurve)value); break;
                 case Gradient: encode = "(Gradient)" + Serializer.SerializeGradient((Gradient)value); break;
                 case UnityEngine.Object obj:
-                    string assetPath = AssetDatabase.GetAssetPath(obj);
+                    string assetPath = Application.isEditor ? AssetDatabase.GetAssetPath(obj) : null;
                     if (!string.IsNullOrEmpty(assetPath))
                     {
                         encode = "(UnityEngine.Object)" + assetPath;
@@ -185,7 +185,14 @@ public class Blackboard : Dictionary<string, object>, ISerializationCallbackRece
             case "AnimationCurve": Add(key, Serializer.DeserializeAnimationCurve(encodedValue)); return;
             case "Gradient": Add(key, Serializer.DeserializeGradient(encodedValue)); return;
             case "UnityEngine.Object":
-                EditorApplication.delayCall += () => Add(key, AssetDatabase.LoadAssetAtPath<UnityEngine.Object>(encodedValue));
+                if(Application.isEditor)
+                {
+                    EditorApplication.delayCall += () => Add(key, AssetDatabase.LoadAssetAtPath<UnityEngine.Object>(encodedValue));
+                }
+                else
+                {
+                    Add(key, Resources.Load(encodedValue));
+                }        
                 return;
             default: break;
         }
@@ -207,7 +214,7 @@ public class Blackboard : Dictionary<string, object>, ISerializationCallbackRece
     [System.Serializable]
     private static class Serializer
     {
-        #region GradientSerialization
+#region GradientSerialization
         [System.Serializable]
         private class SerializableGradient
         {
@@ -308,8 +315,8 @@ public class Blackboard : Dictionary<string, object>, ISerializationCallbackRece
             Debug.LogError("Failed to deserialize Gradient from JSON: " + json);
             return new Gradient(); // Return a default Gradient or handle the error as needed
         }
-        #endregion
-        #region AnimationCurveSerialization
+#endregion
+#region AnimationCurveSerialization
         [System.Serializable]
         private struct SerializableKeyframe
         {
@@ -379,8 +386,8 @@ public class Blackboard : Dictionary<string, object>, ISerializationCallbackRece
             curve.preWrapMode = serializableCurve.postWrapMode;
             return curve;
         }
-        #endregion
-        #region VectorSerialization
+#endregion
+#region VectorSerialization
         public static Vector2 ParseVector2(string vectorString)
         {
             vectorString = vectorString.Replace("(", "").Replace(")", "");
@@ -464,8 +471,8 @@ public class Blackboard : Dictionary<string, object>, ISerializationCallbackRece
             Debug.LogError("Failed to parse Vector4 from string: " + vectorString);
             return Vector4.zero;
         }
-        #endregion
-        #region BoundsSerialization
+#endregion
+#region BoundsSerialization
         /// <summary>
         /// Produces a Bounds object from the result of Bounds.ToString(). Returns a Bounds with all zero values if unable to parse.
         /// </summary>
@@ -519,8 +526,8 @@ public class Blackboard : Dictionary<string, object>, ISerializationCallbackRece
             Debug.LogWarning("Failed to parse BoundsInt from string: " + boundsString);
             return new BoundsInt(Vector3Int.zero, Vector3Int.zero);
         }
-        #endregion
-        #region RectSerialization
+#endregion
+#region RectSerialization
 
         /// <summary>
         /// Takes the string result of Rect.ToString() and produces the original Rect. Returns a zero-rect if unable to parse.
@@ -570,7 +577,7 @@ public class Blackboard : Dictionary<string, object>, ISerializationCallbackRece
             return new RectInt(0, 0, 0, 0);
         }
 
-        #endregion
+#endregion
 
         /// <summary>
         /// Takes the type, encoded as string, and the enum value and produces an Enum of the proper type.
